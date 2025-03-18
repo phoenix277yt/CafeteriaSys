@@ -31,16 +31,16 @@ This project aims to enhance the dining experience for students, parents, and em
 
 ## 🖥️ Hardware Requirements
 - **Student-Facing Kiosk**:
-    - 🖥️ Touchscreen kiosk using a touch panel and an old PC from the computer lab.
+    - 🖥️ Touchscreen kiosk using a touch panel and an old PC.
 - **Kitchen Setup**:
-    - 💻 Old laptop capable of running web pages.
+    - 💻 Old laptop capable of running new web pages.
     - 🌫️ AQI sensor.
     - 💧 Multiple moisture/humidity sensors.
     - 🌡️ Multiple temperature sensors.
 - **Server**:
     - ⏰ 8 AM to 12 AM uptime.
     - 🌐 Open to the internet.
-    - 💾 At least 128 GB of free storage.
+    - 💾 At least 128 GB of free storage. (For Futureproofing)
     - 🐧 Runs on Linux.
 
 ---

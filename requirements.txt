@@ -1,0 +1,29 @@
+For student-facing kiosk:
+- Ability to view menu for the month
+- Ability to select what meal (individual per item basis) you've had and rate each of the items in the meal
+- Ability to view the health conditions in the kitchen (integration with AQI and moisture sensors)
+
+For mobile app:
+- Ability to vote on menu items (polls to be held every third week)
+- Ability for parents to add feedback and requests regarding food
+- Ability to view current and upcoming menu
+- Ability to add a complaint
+- Ability to view opened tickets and ratings from the kiosk (all of them)
+- Ability to "reserve" what meal you're going to have to help the kitchen estimate quantity to cook and amount of groceries to order
+
+For employee-facing side:
+- Ability to view health conditions and suggested solutions
+- Ability to respond to complaints
+- Ability to add meals (item photo + name and description + health data (calories, vitamins, etc.))
+- Ability to view poll responses and update poll status to confirmed
+- Ability to see the amount of "reserved" meals
+- Basic inventory system (amount of ingredients left, instant order through Blinkit or other service)
+- Recipes in the future?
+
+Hardware requirements:
+- Touchscreen kiosk (using touch panel and old PC from the computer lab?)
+- Old laptop (new enough to run webpages) in the kitchen
+- 8 AM to 12 AM uptime server (open to the internet, like 128GB free storage? Will run Linux)
+- AQI sensor
+- Multiple moisture/humidity sensors
+- Multiple temperature sensors

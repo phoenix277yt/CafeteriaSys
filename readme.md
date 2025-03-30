@@ -3,11 +3,11 @@
 This project aims to enhance the dining experience for students, parents, and employees by providing an integrated system consisting of a student-facing kiosk, a mobile app, and an employee-facing interface. Below are the key features and hardware requirements for the project.
 
 ---
-#Current
+# Current
 
 
 
-#As per plan,
+# As per plan,
 ## ✨ Features
 
 ### 🎓 **Student-Facing Kiosk**

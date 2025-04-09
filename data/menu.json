@@ -1,0 +1,52 @@
+{
+    "menu_items": [
+        {
+            "id": 1,
+            "name": "Curry Chawal",
+            "image": "curry_chawal.jpg",
+            "components": [
+                {
+                    "id": 1,
+                    "name": "Curry"
+                },
+                {
+                    "id": 2,
+                    "name": "Rice"
+                },
+                {
+                    "id": 3,
+                    "name": "Pakoda"
+                }
+            ],
+            "dates_served": [
+                "2023-06-01",
+                "2023-06-08",
+                "2023-06-15"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Dal Khichdi",
+            "image": "dal_khichdi.jpg",
+            "components": [
+                {
+                    "id": 4,
+                    "name": "Dal"
+                },
+                {
+                    "id": 5,
+                    "name": "Rice"
+                },
+                {
+                    "id": 6,
+                    "name": "Ghee"
+                }
+            ],
+            "dates_served": [
+                "2023-06-02",
+                "2023-06-09",
+                "2023-06-16"
+            ]
+        }
+    ]
+}

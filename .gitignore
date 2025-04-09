@@ -1,0 +1,39 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Data files generated at runtime
+data/feedback.json
+exports/
+reports/
+
+# Images generated at runtime
+images/very_sad.png
+images/sad.png
+images/neutral.png
+images/happy.png
+images/very_happy.png
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

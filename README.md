@@ -20,10 +20,37 @@ A simple yet powerful Python-based system for cafeteria management with a focus 
 - numpy for numerical operations
 - matplotlib for visualization
 
+## Installation
+
+### System Dependencies
+
+First, install the required system dependencies:
+
 ```bash
 # For Debian/Ubuntu/elementaryOS
-sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-pil python3-pandas python3-numpy python3-matplotlib
+sudo apt install python3-dev python3-venv python3-gi python3-gi-cairo gir1.2-gtk-3.0
 ```
+
+### Python Environment Setup
+
+It's recommended to use a virtual environment:
+
+```bash
+# Create a virtual environment in the project directory
+python3 -m venv .venv
+
+# Activate the virtual environment
+source .venv/bin/activate   # For bash/zsh
+# OR
+source .venv/bin/activate.fish   # For fish shell
+# OR
+source .venv/bin/activate.csh   # For csh/tcsh
+
+# Install Python dependencies
+pip install pillow pandas numpy matplotlib
+```
+
+Note: You need to install the GTK system dependencies before creating the virtual environment, as PyGObject requires system libraries that cannot be installed through pip.
 
 ## File Structure
 
@@ -36,14 +63,15 @@ sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-pil python3-
 
 ## Getting Started
 
-1. Ensure you have all the required dependencies installed
-2. Run the application:
+1. Ensure you have all the required dependencies installed (see Installation section)
+2. Activate your virtual environment if you're using one
+3. Run the application:
 
 ```bash
-python3 main.py
+python main.py
 ```
 
-3. The application will create the necessary directories if they don't exist.
+4. The application will create the necessary directories if they don't exist.
 
 ## Usage
 

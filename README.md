@@ -33,11 +33,13 @@ sudo apt install python3-dev python3-venv python3-gi python3-gi-cairo gir1.2-gtk
 
 ### Python Environment Setup
 
-It's recommended to use a virtual environment:
+This project uses PyGObject (GTK) libraries which are typically installed at the system level. Use one of the following approaches:
+
+#### Option 1: Use a virtual environment with system packages (Recommended)
 
 ```bash
-# Create a virtual environment in the project directory
-python3 -m venv .venv
+# Create a virtual environment with access to system packages
+python3 -m venv .venv --system-site-packages
 
 # Activate the virtual environment
 source .venv/bin/activate   # For bash/zsh
@@ -47,10 +49,18 @@ source .venv/bin/activate.fish   # For fish shell
 source .venv/bin/activate.csh   # For csh/tcsh
 
 # Install Python dependencies
-pip install pillow pandas numpy matplotlib
+pip install pillow pandas numpy matplotlib pygobject
 ```
 
-Note: You need to install the GTK system dependencies before creating the virtual environment, as PyGObject requires system libraries that cannot be installed through pip.
+#### Option 2: Use the system Python directly
+
+If you prefer not to use a virtual environment, you can install the dependencies directly:
+
+```bash
+pip3 install --user pillow pandas numpy matplotlib pygobject
+```
+
+Note: The `--system-site-packages` flag is crucial as PyGObject (GTK) bindings require system libraries and won't work in an isolated virtual environment.
 
 ## File Structure
 

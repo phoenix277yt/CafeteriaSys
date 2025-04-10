@@ -1,6 +1,6 @@
 # Cafeteria Management System
 
-A simple yet powerful Python-based system for cafeteria management with a focus on component-level feedback collection, built with GTK following the elementaryOS Human Interface Guidelines.
+A simple yet powerful Python-based system for cafeteria management with a focus on component-level feedback collection, built with GTK.
 
 ## Features
 

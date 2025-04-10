@@ -31,6 +31,8 @@ First, install the required system dependencies:
 sudo apt install python3-dev python3-venv python3-gi python3-gi-cairo gir1.2-gtk-3.0
 ```
 
+*Not yet tested on Arch, Windows or macOS, dependencies may be different.
+
 ### Python Environment Setup
 
 This project uses PyGObject (GTK) libraries which are typically installed at the system level. Use one of the following approaches:

@@ -1,16 +1,45 @@
 import gi
+import os
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GLib
-import os
-from database import Database
-from datetime import datetime
+
+from database import MenuDatabase
+
+class MenuSystem:
+    """Class to handle menu operations and management"""
+    
+    def __init__(self):
+        """Initialize the menu system"""
+        self.menu_db = MenuDatabase()
+    
+    def get_all_menu_items(self):
+        """Get all menu items from the database"""
+        return self.menu_db.get_all_menu_items()
+    
+    def get_menu_by_category(self, category):
+        """Get menu items filtered by category"""
+        return self.menu_db.get_menu_by_category(category)
+    
+    def add_menu_item(self, name, description, price, category, image=None):
+        """Add a new menu item"""
+        return self.menu_db.add_menu_item(name, description, price, category, image)
+    
+    def update_menu_item(self, item_id, **kwargs):
+        """Update an existing menu item"""
+        return self.menu_db.update_menu_item(item_id, **kwargs)
+    
+    def delete_menu_item(self, item_id):
+        """Delete a menu item"""
+        return self.menu_db.delete_menu_item(item_id)
 
 class MenuDisplay:
     def __init__(self, parent):
         self.parent = parent
-        self.db = Database()
+        self.db = MenuDatabase()
+        self.current_date = None
+        self.content_box = None
         self.create_menu_view()
-        
+    
     def create_menu_view(self):
         # Main container
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -18,7 +47,13 @@ class MenuDisplay:
         main_box.set_margin_start(10)
         main_box.set_margin_end(10)
         main_box.set_margin_bottom(10)
-        self.parent.pack_start(main_box, True, True, 0)
+        
+        # Instead of calling pack_start on the parent, add it to the menu_tab
+        if hasattr(self.parent, 'menu_tab'):
+            self.parent.menu_tab.pack_start(main_box, True, True, 0)
+        else:
+            # This is likely the menu_tab itself, so we can add directly
+            self.parent.pack_start(main_box, True, True, 0)
         
         # Title
         title = Gtk.Label(label="Today's Menu")
@@ -37,45 +72,40 @@ class MenuDisplay:
         all_dates = set()
         menu_items = self.db.get_all_menu_items()
         for item in menu_items:
-            all_dates.update(item.get("dates_served", []))
+            for date in item.get("dates", []):
+                all_dates.add(date)
         
-        # Convert to list and sort
-        date_list = sorted(list(all_dates))
-        
-        # Default to today if it exists in the list, otherwise use the first date
-        today = datetime.now().strftime("%Y-%m-%d")
-        default_date = today if today in date_list else (date_list[0] if date_list else today)
-        
-        # Date combobox
+        # Create the date dropdown
         self.date_combo = Gtk.ComboBoxText()
-        for date in date_list:
+        for date in sorted(all_dates):
             self.date_combo.append_text(date)
-        if date_list:
-            # Set active date
-            for i, date in enumerate(date_list):
-                if date == default_date:
-                    self.date_combo.set_active(i)
-                    break
-            if self.date_combo.get_active() < 0:
-                self.date_combo.set_active(0)
+        
+        # Select first date by default
+        if all_dates:
+            self.date_combo.set_active(0)
+            self.current_date = sorted(all_dates)[0]
         
         self.date_combo.connect("changed", self.on_date_changed)
-        date_box.pack_start(self.date_combo, False, False, 0)
+        date_box.pack_start(self.date_combo, True, True, 0)
         
         # Scrolled window for menu items
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        scrolled.set_hexpand(True)
-        scrolled.set_vexpand(True)
-        main_box.pack_start(scrolled, True, True, 0)
+        scrolled.set_min_content_height(300)
+        main_box.pack_start(scrolled, True, True, 10)
         
         # Content box for menu items
         self.content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         scrolled.add(self.content_box)
         
-        # Load initial menu
+        # Update the menu display with current date
         self.update_menu_display()
     
+    def create_menu_ui(self, parent):
+        # This method is called from main.py, but we already set up the UI in __init__
+        # So we don't need to do anything here now
+        pass
+
     def on_date_changed(self, combo):
         self.update_menu_display()
     

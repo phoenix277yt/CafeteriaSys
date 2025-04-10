@@ -1,11 +1,14 @@
 import gi
+import os
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, Gdk
-import os
-from menu import MenuDisplay
+
+from menu import MenuDisplay, MenuSystem
 from feedback import FeedbackSystem
 from export import ExportData
 from analytics import FeedbackAnalytics
+from theme_manager import ThemeManager
+from database import Database
 
 class CafeteriaManagementSystem(Gtk.Window):
     def __init__(self):
@@ -13,72 +16,69 @@ class CafeteriaManagementSystem(Gtk.Window):
         self.set_default_size(800, 600)
         self.set_border_width(10)
         
+        # Initialize theme manager
+        self.theme_manager = ThemeManager()
+        
+        # Initialize database and systems first
+        self.db = Database()
+        self.menu_system = MenuSystem()
+        self.export_data = ExportData()
+        self.analytics = FeedbackAnalytics()
+        
         # Apply elementary OS styling
         self.set_position(Gtk.WindowPosition.CENTER)
         self.connect("destroy", Gtk.main_quit)
         self.set_icon_name("applications-utilities")  # Use system icon
-        
-        # Create CSS provider for styling
-        css_provider = Gtk.CssProvider()
-        css = b"""
-            .main-header {
-                font-weight: bold;
-                font-size: 18px;
-            }
-            .sub-header {
-                font-weight: bold;
-                font-size: 16px;
-            }
-            .card {
-                background: white;
-                border: 1px solid #d4d4d4;
-                border-radius: 4px;
-                padding: 12px;
-                margin: 8px;
-            }
-        """
-        css_provider.load_from_data(css)
-        Gtk.StyleContext.add_provider_for_screen(
-            Gdk.Screen.get_default(), 
-            css_provider, 
-            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-        )
         
         # Create a vertical box for main layout
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.add(self.main_box)
         
         # Create header
-        header = Gtk.Label(label="Cafeteria Management System")
-        context = header.get_style_context()
-        context.add_class("main-header")
-        header.set_margin_bottom(10)
-        self.main_box.pack_start(header, False, False, 0)
+        self.create_header()
         
         # Create notebook (tabbed interface)
         self.notebook = Gtk.Notebook()
-        self.notebook.set_tab_pos(Gtk.PositionType.TOP)
         self.main_box.pack_start(self.notebook, True, True, 0)
         
-        # Menu Tab
-        self.menu_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        # Create tabs
+        self.menu_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.feedback_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.admin_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        
+        self.notebook.append_page(self.menu_tab, Gtk.Label(label="Menu"))
+        self.notebook.append_page(self.feedback_tab, Gtk.Label(label="Feedback"))
+        self.notebook.append_page(self.admin_tab, Gtk.Label(label="Admin"))
+        
+        # Initialize menu display with menu_tab as parent
         self.menu_display = MenuDisplay(self.menu_tab)
-        menu_label = Gtk.Label(label="Menu")
-        self.notebook.append_page(self.menu_tab, menu_label)
         
-        # Feedback Tab
-        self.feedback_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.feedback_system = FeedbackSystem(self.feedback_tab)
-        feedback_label = Gtk.Label(label="Feedback")
-        self.notebook.append_page(self.feedback_tab, feedback_label)
+        # Initialize feedback system and pass the feedback_tab to create_feedback_ui
+        self.feedback_system = FeedbackSystem(self)
+        self.feedback_system.create_feedback_ui(self.feedback_tab)
         
-        # Admin Tab
-        self.admin_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        admin_label = Gtk.Label(label="Admin")
-        self.notebook.append_page(self.admin_tab, admin_label)
+        # Create admin panel
         self.create_admin_panel()
+        
+        # Apply theme
+        self.apply_theme()
+        
+        self.show_all()
+        
+    def create_header(self):
+        """Create header with title and logo"""
+        header_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        header_box.set_margin_bottom(10)
+        
+        # Title
+        title = Gtk.Label()
+        title.set_markup("<span size='x-large' weight='bold'>Cafeteria Management System</span>")
+        header_box.pack_start(title, True, True, 0)
+        
+        self.main_box.pack_start(header_box, False, False, 0)
     
     def create_admin_panel(self):
+        """Create admin panel with export and analysis options"""
         # Create a box for admin content
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         box.set_margin_top(10)
@@ -89,8 +89,6 @@ class CafeteriaManagementSystem(Gtk.Window):
         
         # Admin title
         admin_title = Gtk.Label(label="Admin Panel")
-        context = admin_title.get_style_context()
-        context.add_class("sub-header")
         admin_title.set_halign(Gtk.Align.START)  # Left align
         box.pack_start(admin_title, False, False, 10)
         
@@ -113,73 +111,148 @@ class CafeteriaManagementSystem(Gtk.Window):
         report_button = Gtk.Button(label="Generate Analytics Report")
         report_button.connect("clicked", self.generate_report)
         box.pack_start(report_button, False, False, 5)
-    
-    def export_feedback(self, button):
-        exporter = ExportData()
-        success = exporter.export_to_sheets()
         
-        if success:
-            dialog = Gtk.MessageDialog(
-                transient_for=self,
-                flags=0,
-                message_type=Gtk.MessageType.INFO,
-                buttons=Gtk.ButtonsType.OK,
-                text="Export Successful",
-            )
-            dialog.format_secondary_text("Feedback data exported to Google Sheets format successfully!")
-        else:
-            dialog = Gtk.MessageDialog(
-                transient_for=self,
-                flags=0,
-                message_type=Gtk.MessageType.ERROR,
-                buttons=Gtk.ButtonsType.OK,
-                text="Export Failed",
-            )
-            dialog.format_secondary_text("Failed to export data. Check console for details.")
+        # Add separator
+        separator = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        separator.set_margin_top(10)
+        separator.set_margin_bottom(10)
+        box.pack_start(separator, False, False, 0)
         
-        dialog.run()
-        dialog.destroy()
+        # Add theme selector
+        self.theme_manager.create_theme_selector(box)
     
-    def view_feedback_summary(self, button):
-        feedback_window = Gtk.Window(title="Feedback Summary")
-        feedback_window.set_default_size(600, 400)
-        feedback_window.set_transient_for(self)
-        feedback_window.set_position(Gtk.WindowPosition.CENTER_ON_PARENT)
-        
-        # This would display a summary of the feedback
-        self.feedback_system.display_summary(feedback_window)
-        
-        feedback_window.show_all()
-    
-    def show_data_analysis(self, button):
-        """Show the data analysis dialog"""
-        analytics = FeedbackAnalytics()
-        analytics.show_analysis(self)
-    
-    def generate_report(self, button):
-        """Generate a comprehensive analytics report"""
-        analytics = FeedbackAnalytics()
-        report_path = analytics.save_report()
+    def export_feedback(self, widget):
+        """Export feedback data to Google Sheets format"""
+        success = self.export_data.export_to_csv()
         
         dialog = Gtk.MessageDialog(
             transient_for=self,
             flags=0,
             message_type=Gtk.MessageType.INFO,
             buttons=Gtk.ButtonsType.OK,
-            text="Report Generated",
+            text="Export Complete",
         )
-        dialog.format_secondary_text(f"Analytics report has been saved to {report_path}")
+        
+        if success:
+            dialog.format_secondary_text(
+                "Feedback data has been exported successfully to the 'exports' folder."
+            )
+        else:
+            dialog.format_secondary_text(
+                "There was a problem exporting the feedback data."
+            )
+        
         dialog.run()
         dialog.destroy()
-
-if __name__ == "__main__":
-    # Create necessary directories if they don't exist
-    if not os.path.exists("data"):
-        os.makedirs("data")
-    if not os.path.exists("images"):
-        os.makedirs("images")
+    
+    def view_feedback_summary(self, widget):
+        """Show feedback summary dialog"""
+        summary = self.feedback_system.get_feedback_summary()
         
+        dialog = Gtk.Dialog(
+            title="Feedback Summary",
+            transient_for=self,
+            flags=0,
+            buttons=(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        )
+        
+        dialog.set_default_size(400, 300)
+        content_area = dialog.get_content_area()
+        
+        # Create a scrolled window for the content
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        content_area.pack_start(scrolled_window, True, True, 0)
+        
+        # Create a box for the content
+        content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        content_box.set_margin_top(10)
+        content_box.set_margin_start(10)
+        content_box.set_margin_end(10)
+        content_box.set_margin_bottom(10)
+        scrolled_window.add(content_box)
+        
+        # Add summary content
+        if summary:
+            for dish_name, components in summary.items():
+                dish_label = Gtk.Label()
+                dish_label.set_markup(f"<b>{dish_name}</b>")
+                dish_label.set_halign(Gtk.Align.START)
+                content_box.pack_start(dish_label, False, False, 5)
+                
+                for component, rating in components.items():
+                    component_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+                    component_label = Gtk.Label(label=f"{component}:")
+                    component_label.set_halign(Gtk.Align.START)
+                    component_box.pack_start(component_label, False, False, 5)
+                    
+                    rating_label = Gtk.Label(label=f"{rating:.1f}/5.0")
+                    component_box.pack_start(rating_label, False, False, 0)
+                    
+                    content_box.pack_start(component_box, False, False, 2)
+                
+                # Add separator between dishes
+                separator = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+                content_box.pack_start(separator, False, False, 10)
+        else:
+            no_data_label = Gtk.Label(label="No feedback data available.")
+            content_box.pack_start(no_data_label, False, False, 0)
+        
+        dialog.show_all()
+        dialog.run()
+        dialog.destroy()
+    
+    def show_data_analysis(self, widget):
+        """Show advanced data analysis window"""
+        success = self.analytics.show_analysis_window()
+        
+        if not success:
+            dialog = Gtk.MessageDialog(
+                transient_for=self,
+                flags=0,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.OK,
+                text="Analysis Error",
+            )
+            dialog.format_secondary_text(
+                "Could not generate the analysis. There might not be enough feedback data."
+            )
+            dialog.run()
+            dialog.destroy()
+    
+    def generate_report(self, widget):
+        """Generate and save analytics report"""
+        success = self.analytics.generate_report()
+        
+        dialog = Gtk.MessageDialog(
+            transient_for=self,
+            flags=0,
+            message_type=Gtk.MessageType.INFO,
+            buttons=Gtk.ButtonsType.OK,
+            text="Report Generation Complete",
+        )
+        
+        if success:
+            dialog.format_secondary_text(
+                "Analytics report has been generated successfully in the 'reports' folder."
+            )
+        else:
+            dialog.format_secondary_text(
+                "There was a problem generating the analytics report."
+            )
+        
+        dialog.run()
+        dialog.destroy()
+    
+    def apply_theme(self):
+        """Apply the selected theme"""
+        self.theme_manager.apply_theme()
+
+def main():
     win = CafeteriaManagementSystem()
     win.connect("destroy", Gtk.main_quit)
     win.show_all()
     Gtk.main()
+
+if __name__ == "__main__":
+    main()

@@ -10,16 +10,15 @@ class FeedbackSystem:
         self.db = Database()
         self.selected_item_id = None
         self.component_ratings = {}
-        self.create_feedback_ui()
     
-    def create_feedback_ui(self):
+    def create_feedback_ui(self, container):
         # Main container
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         main_box.set_margin_top(10)
         main_box.set_margin_start(10)
         main_box.set_margin_end(10)
         main_box.set_margin_bottom(10)
-        self.parent.pack_start(main_box, True, True, 0)
+        container.pack_start(main_box, True, True, 0)
         
         # Title
         title = Gtk.Label(label="Provide Feedback")
@@ -109,7 +108,7 @@ class FeedbackSystem:
             ("very_sad.png", "red"),
             ("sad.png", "orange"),
             ("neutral.png", "yellow"),
-            ("happy.png", "light green"),
+            ("happy.png", "lightgreen"),  # Changed from 'light green' to 'lightgreen'
             ("very_happy.png", "green")
         ]
         

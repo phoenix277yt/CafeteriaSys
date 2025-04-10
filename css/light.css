@@ -1,0 +1,19 @@
+
+                window { background-color: #FFFFFF; }
+                label { color: #212121; }
+                .sub-header {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #1976D2;
+                }
+                .card {
+                    padding: 10px;
+                    border-radius: 5px;
+                    background-color: #F5F5F5;
+                    border: 1px solid #E0E0E0;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+                }
+                .success { background-color: #8BC34A; }
+                .warning { background-color: #FF9800; }
+                .error { background-color: #F44336; }
+            

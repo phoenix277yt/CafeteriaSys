@@ -124,7 +124,7 @@ python main.py
 
 ## Design Principles
 
-The application follows the elementaryOS Human Interface Guidelines:
+The application follows :
 
 - Clean, simple interface with appropriate spacing
 - Consistent visual hierarchy with proper headings

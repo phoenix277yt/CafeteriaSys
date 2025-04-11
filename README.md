@@ -28,7 +28,7 @@ First, install the required system dependencies:
 
 ```bash
 # For Debian/Ubuntu/elementaryOS
-sudo apt install python3-dev python3-venv python3-gi python3-gi-cairo gir1.2-gtk-3.0
+sudo apt install pkg-config libcairo2-dev gir1.2-gtk-3.0 libgirepository1.0-dev python3-dev python3-venv python3-gi python3-gi-cairo gir1.2-gtk-3.0
 ```
 
 *Not yet tested on Arch, Windows or macOS, dependencies may be different.
